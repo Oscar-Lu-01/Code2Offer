@@ -7,6 +7,8 @@ import React, { useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
 import store from "@/stores";
 import { getLoginUserUsingGet } from "@/api/userController";
+import ACCESS_ENUM from "@/access/accessEnum";
+import { setLoginUser } from "@/stores/loginUser";
 
 /**
  * 全局初始化逻辑
@@ -35,7 +37,7 @@ const InitLayout: React.FC<
       //     userAvatar: "https://www.code-nav.cn/logo.png",
       //     userRole: ACCESS_ENUM.ADMIN
       //   };
-      //   dispatch(setLoginUser(testUser));
+      //     dispatch(setLoginUser(testUser));
       // }, 3000);
     }
   }, []);

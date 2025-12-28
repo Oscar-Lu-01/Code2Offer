@@ -3,6 +3,9 @@
     "eslint-config-prettier": "^10.1.8"
   },
   "dependencies": {
+    "@bytemd/plugin-gfm": "^1.22.0",
+    "@bytemd/plugin-highlight": "^1.22.0",
+    "@bytemd/react": "^1.22.0",
     "@reduxjs/toolkit": "^2.11.2",
     "react-redux": "^9.2.0"
   }

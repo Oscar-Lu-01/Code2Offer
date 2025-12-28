@@ -135,6 +135,7 @@ export default function BasicLayout({ children }: Props) {
         onMenuHeaderClick={(e) => console.log(e)}
         // 定义有哪些菜单
         menuDataRender={() => {
+          //执行过滤
           return getAccessibleMenus(loginUser, menus);
         }}
         // 定义了菜单项如何渲染
