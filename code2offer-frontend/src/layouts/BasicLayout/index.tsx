@@ -88,7 +88,7 @@ export default function BasicLayout({ children }: Props) {
         avatarProps={{
           src: loginUser.userAvatar || "/assets/logo.png",
           size: "small",
-          title: loginUser.userName || "抱璞",
+          title: loginUser.userName || "Coder",
           render: (props, dom) => {
             return (
               <Dropdown
