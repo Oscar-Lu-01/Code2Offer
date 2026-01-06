@@ -3,6 +3,8 @@
     "eslint-config-prettier": "^10.1.8"
   },
   "dependencies": {
+    "@ant-design/pro-form": "^2.32.0",
+    "@ant-design/pro-table": "^3.21.0",
     "@bytemd/plugin-gfm": "^1.22.0",
     "@bytemd/plugin-highlight": "^1.22.0",
     "@bytemd/react": "^1.22.0",

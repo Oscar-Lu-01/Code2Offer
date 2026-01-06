@@ -1,53 +1,21 @@
 "use client";
-import {
-  GithubFilled,
-  LogoutOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
+import { GithubFilled, LogoutOutlined } from "@ant-design/icons";
 import { ProLayout } from "@ant-design/pro-components";
-import { Dropdown, Input } from "antd";
+import { Dropdown, message } from "antd";
 import React from "react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import GlobalFooter from "@/components/GlobalFooter";
 import { menus } from "../../../config/menu";
-import { useSelector } from "react-redux";
-import { RootState } from "@/stores";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/stores";
 import getAccessibleMenus from "@/access/menuAccess";
+import { userLogoutUsingPost } from "@/api/userController";
+import { setLoginUser } from "@/stores/loginUser";
+import { DEFAULT_USER } from "@/constants/user";
+import SearchInput from "@/layouts/BasicLayout/components/SearchInput";
 import "./index.css";
-
-/**
- * 搜索条
- * @constructor
- */
-const SearchInput = () => {
-  return (
-    <div
-      key="SearchOutlined"
-      aria-hidden
-      style={{
-        display: "flex",
-        alignItems: "center",
-        marginInlineEnd: 24,
-      }}
-      onMouseDown={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
-      }}
-    >
-      <Input
-        style={{
-          borderRadius: 4,
-          marginInlineEnd: 12,
-        }}
-        prefix={<SearchOutlined />}
-        placeholder="搜索题目"
-        variant="borderless"
-      />
-    </div>
-  );
-};
 
 interface Props {
   children: React.ReactNode;
@@ -62,6 +30,22 @@ export default function BasicLayout({ children }: Props) {
   const pathname = usePathname();
   // 当前登录用户
   const loginUser = useSelector((state: RootState) => state.loginUser);
+  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+
+  /**
+   * 用户注销
+   */
+  const userLogout = async () => {
+    try {
+      await userLogoutUsingPost();
+      message.success("已退出登录");
+      dispatch(setLoginUser(DEFAULT_USER));
+      router.push("/user/login");
+    } catch (e) {
+      message.error("操作失败，" + (e as Error).message);
+    }
+  };
 
   return (
     <div
@@ -79,7 +63,7 @@ export default function BasicLayout({ children }: Props) {
             src="/assets/logo.png"
             height={32}
             width={32}
-            alt="Code2Offer"
+            alt="Code2Offer刷题网站"
           />
         }
         location={{
@@ -88,8 +72,19 @@ export default function BasicLayout({ children }: Props) {
         avatarProps={{
           src: loginUser.userAvatar || "/assets/logo.png",
           size: "small",
-          title: loginUser.userName || "Coder",
+          title: loginUser.userName || "coder",
           render: (props, dom) => {
+            if (!loginUser.id) {
+              return (
+                <div
+                  onClick={() => {
+                    router.push("/user/login");
+                  }}
+                >
+                  {dom}
+                </div>
+              );
+            }
             return (
               <Dropdown
                 menu={{
@@ -100,6 +95,12 @@ export default function BasicLayout({ children }: Props) {
                       label: "退出登录",
                     },
                   ],
+                  onClick: async (event: { key: React.Key }) => {
+                    const { key } = event;
+                    if (key === "logout") {
+                      userLogout();
+                    }
+                  },
                 }}
               >
                 {dom}
@@ -113,7 +114,7 @@ export default function BasicLayout({ children }: Props) {
             <SearchInput key="search" />,
             <a
               key="github"
-              href="https://github.com/Oscar-Lu-01/Code2Offer"
+              href="https://github.com/Oscar-Lu-01"
               target="_blank"
             >
               <GithubFilled key="GithubFilled" />
@@ -135,7 +136,6 @@ export default function BasicLayout({ children }: Props) {
         onMenuHeaderClick={(e) => console.log(e)}
         // 定义有哪些菜单
         menuDataRender={() => {
-          //执行过滤
           return getAccessibleMenus(loginUser, menus);
         }}
         // 定义了菜单项如何渲染

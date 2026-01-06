@@ -25,4 +25,12 @@ npm install @reduxjs/toolkit react-redux
 md编辑器
 npm i @bytemd/react
 npm i @bytemd/plugin-highlight @bytemd/plugin-gfm
+npm install github-markdown-css
+
+
+登录表单
+https://procomponents.ant.design/components/login-form
+npm i @ant-design/pro-form
+npm i @ant-design/pro-table
+
 

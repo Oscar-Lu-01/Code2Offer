@@ -1,14 +1,13 @@
 "use client";
-
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import "./globals.css";
 import BasicLayout from "@/layouts/BasicLayout";
 import React, { useCallback, useEffect } from "react";
-import { Provider } from "react-redux";
-import store from "@/stores";
+import { Provider, useDispatch } from "react-redux";
+import store, { AppDispatch } from "@/stores";
 import { getLoginUserUsingGet } from "@/api/userController";
-import ACCESS_ENUM from "@/access/accessEnum";
+import AccessLayout from "@/access/AccessLayout";
 import { setLoginUser } from "@/stores/loginUser";
+import "./globals.css";
 
 /**
  * 全局初始化逻辑
@@ -20,14 +19,13 @@ const InitLayout: React.FC<
     children: React.ReactNode;
   }>
 > = ({ children }) => {
-  //全局初始化高级组件，全局单次调用代码写在这里
-
-  //初始化全局用户状态
-  //使用useCallback做缓存，避免子组件刷新时候使init重复刷新
+  const dispatch = useDispatch<AppDispatch>();
+  // 初始化全局用户状态
   const doInitLoginUser = useCallback(async () => {
     const res = await getLoginUserUsingGet();
-    if (res.data) {
+    if (res) {
       // 更新全局用户状态
+      dispatch(setLoginUser(res as any));
     } else {
       // 仅用于测试
       // setTimeout(() => {
@@ -37,16 +35,15 @@ const InitLayout: React.FC<
       //     userAvatar: "https://www.code-nav.cn/logo.png",
       //     userRole: ACCESS_ENUM.ADMIN
       //   };
-      //     dispatch(setLoginUser(testUser));
+      //   dispatch(setLoginUser(testUser));
       // }, 3000);
     }
   }, []);
 
-  //确保只执行一次：deps数组发生变化useEffect才会执行
+  // 只执行一次
   useEffect(() => {
     doInitLoginUser();
   }, []);
-
   return children;
 };
 
@@ -61,7 +58,9 @@ export default function RootLayout({
         <AntdRegistry>
           <Provider store={store}>
             <InitLayout>
-              <BasicLayout>{children}</BasicLayout>
+              <BasicLayout>
+                <AccessLayout>{children}</AccessLayout>
+              </BasicLayout>
             </InitLayout>
           </Provider>
         </AntdRegistry>

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 
 // 创建 Axios 示例
 const myAxios = axios.create({
@@ -38,7 +38,7 @@ myAxios.interceptors.response.use(
       // 其他错误
       throw new Error(data.message ?? "服务器错误");
     }
-    return data;
+    return data.data;
   },
   // 非 2xx 响应触发
   function (error) {
@@ -47,4 +47,23 @@ myAxios.interceptors.response.use(
   },
 );
 
-export default myAxios;
+//export default myAxios;
+// ✨✨✨ 修复点：适配器函数 ✨✨✨
+// 支持 request('/api/xxx', { method: 'POST' }) 这种两个参数的写法
+const request = async <T = any>(
+    url: string | AxiosRequestConfig,
+    config?: AxiosRequestConfig
+): Promise<T> => {
+    // 如果第一个参数是字符串，说明是 url
+    if (typeof url === 'string') {
+        return myAxios.request({
+            url: url,
+            ...config,
+        });
+    } else {
+        // 如果第一个参数是对象，说明是 config
+        return myAxios.request(url);
+    }
+};
+
+export default request;
