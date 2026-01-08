@@ -61,7 +61,7 @@ public class QuestionBankVO implements Serializable {
     /**
      * 题库里的题目分页
      */
-    Page<Question> questionPage;
+    Page<QuestionVO> questionPage;
 
 
     /**

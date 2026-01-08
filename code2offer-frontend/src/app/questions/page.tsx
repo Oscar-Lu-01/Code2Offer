@@ -36,7 +36,7 @@ export default async function QuestionsPage({ searchParams }: PageProps) {
       searchText: searchText,
       pageSize: 12,
       sortField: "_score",
-      sortOrder: "descend",
+      sortOrder: "descend",  
     });
 
     const data = res as any;

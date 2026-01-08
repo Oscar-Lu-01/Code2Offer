@@ -19,6 +19,7 @@ import edu.hhu.Code2Offer.model.entity.Question;
 import edu.hhu.Code2Offer.model.entity.QuestionBank;
 import edu.hhu.Code2Offer.model.entity.User;
 import edu.hhu.Code2Offer.model.vo.QuestionBankVO;
+import edu.hhu.Code2Offer.model.vo.QuestionVO;
 import edu.hhu.Code2Offer.service.QuestionBankService;
 import edu.hhu.Code2Offer.service.QuestionService;
 import edu.hhu.Code2Offer.service.UserService;
@@ -156,11 +157,16 @@ public class QuestionBankController {
         if (needQueryQuestion) {
             QuestionQueryRequest questionQueryRequest = new QuestionQueryRequest();
             questionQueryRequest.setId(id);
+            //按需支持题目搜索参数，例如分页
+            questionQueryRequest.setPageSize(questionQueryRequest.getPageSize());
+            questionQueryRequest.setCurrent(questionQueryRequest.getCurrent());
             Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
-            questionBankVO.setQuestionPage(questionPage);
+            //封装
+            Page<QuestionVO> questionVOPage = questionService.getQuestionVOPage(questionPage,request);
+            questionBankVO.setQuestionPage(questionVOPage);
         }
         // 获取封装类
-        return ResultUtils.success(questionBankService.getQuestionBankVO(questionBank, request));
+        return ResultUtils.success(questionBankVO);
     }
 
     /**
@@ -193,7 +199,7 @@ public class QuestionBankController {
         long current = questionBankQueryRequest.getCurrent();
         long size = questionBankQueryRequest.getPageSize();
         // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(size > 200, ErrorCode.PARAMS_ERROR);
         // 查询数据库
         Page<QuestionBank> questionBankPage = questionBankService.page(new Page<>(current, size),
                 questionBankService.getQueryWrapper(questionBankQueryRequest));

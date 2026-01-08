@@ -71,6 +71,11 @@ public class QuestionController {
         // todo 在此处将实体类和 DTO 进行转换
         Question question = new Question();
         BeanUtils.copyProperties(questionAddRequest, question);
+        List<String> tags = questionAddRequest.getTags();
+        if(tags!=null){
+            question.setTags(JSONUtil.toJsonStr(tags));
+        }
+
         // 数据校验
         questionService.validQuestion(question, true);
         // todo 填充默认值
@@ -127,6 +132,11 @@ public class QuestionController {
         // todo 在此处将实体类和 DTO 进行转换
         Question question = new Question();
         BeanUtils.copyProperties(questionUpdateRequest, question);
+        List<String> tags = questionUpdateRequest.getTags();
+        if(tags!=null){
+            question.setTags(JSONUtil.toJsonStr(tags));
+        }
+
         // 数据校验
         questionService.validQuestion(question, false);
         // 判断是否存在
@@ -193,7 +203,7 @@ public class QuestionController {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
         // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(size > 200, ErrorCode.PARAMS_ERROR);
         // 查询数据库
         Page<Question> questionPage = questionService.page(new Page<>(current, size),
                 questionService.getQueryWrapper(questionQueryRequest));
@@ -218,7 +228,7 @@ public class QuestionController {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
         // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(size > 200, ErrorCode.PARAMS_ERROR);
         // 查询数据库
         Page<Question> questionPage = questionService.page(new Page<>(current, size),
                 questionService.getQueryWrapper(questionQueryRequest));
@@ -263,6 +273,36 @@ public class QuestionController {
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }
+
+
+    @PostMapping("/search/page/vo")
+    public BaseResponse<Page<QuestionVO>> searchQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
+                                                                 HttpServletRequest request) {
+        long size = questionQueryRequest.getPageSize();
+        // 限制爬虫
+        ThrowUtils.throwIf(size > 200, ErrorCode.PARAMS_ERROR);
+        Page<Question> questionPage = questionService.searchFromEs(questionQueryRequest);
+
+        // ================== 【调试代码开始】 ==================
+        System.out.println("------------ 1. ES 查询结果 RAW DATA ------------");
+        // 打印 Total
+        System.out.println("ES 命中总数: " + questionPage.getTotal());
+
+        // 打印列表内容 (建议用 Gson 或 Jackson 转 JSON，方便看)
+        // 假设你有 Gson:
+        // System.out.println(new com.google.gson.GsonBuilder().setPrettyPrinting().create().toJson(questionPage.getRecords()));
+
+        // 或者直接简单打印 List (前提是 Question 类重写了 toString)
+        for (Question q : questionPage.getRecords()) {
+            System.out.println("ES查到的题目ID: " + q.getId() + ", 标题: " + q.getTitle());
+        }
+        System.out.println("------------------------------------------------");
+        // ================== 【调试代码结束】 =================
+
+
+        return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
+    }
+
 
     // endregion
 }

@@ -24,16 +24,16 @@ spring:
     password: 123456
   # Redis 配置
   # todo 需替换配置，然后取消注释
-#  redis:
-#    database: 1
-#    host: localhost
-#    port: 6379
-#    timeout: 5000
+  redis:
+    database: 0
+    host: 106.13.184.117
+    port: 16379
+    timeout: 5000
 #    password: 123456
   # Elasticsearch 配置
   # todo 需替换配置，然后取消注释
-#  elasticsearch:
-#    uris: http://localhost:9200
+  elasticsearch:
+    uris: http://localhost:9200
 #    username: root
 #    password: 123456
   # 文件上传
@@ -99,3 +99,6 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - edu.hhu.Code2Offer.controller
+#logging:
+#  level:
+#    org.springframework.data.elasticsearch.client.WIRE: TRACE

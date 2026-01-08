@@ -23,8 +23,8 @@ import edu.hhu.Code2Offer.service.UserService;
 import edu.hhu.Code2Offer.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -37,9 +37,6 @@ import java.util.stream.Collectors;
 
 /**
  * 题库题目关联服务实现
- *
-*
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
  */
 @Service
 @Slf4j
@@ -47,9 +44,12 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
 
     @Resource
     private UserService userService;
-    @Autowired
+
+    @Resource
+    @Lazy
     private QuestionService questionService;
-    @Autowired
+
+    @Resource
     private QuestionBankService questionBankService;
 
     /**
@@ -175,7 +175,6 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
         Set<Long> userIdSet = questionBankQuestionList.stream().map(QuestionBankQuestion::getUserId).collect(Collectors.toSet());
         Map<Long, List<User>> userIdUserListMap = userService.listByIds(userIdSet).stream()
                 .collect(Collectors.groupingBy(User::getId));
-
         // 填充信息
         questionBankQuestionVOList.forEach(questionBankQuestionVO -> {
             Long userId = questionBankQuestionVO.getUserId();
