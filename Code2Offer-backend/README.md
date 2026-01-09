@@ -28,3 +28,8 @@
 
 🔴🟡🟢
 
+
+redis+mysql 服务器
+
+es+kibama   hotkey work
+

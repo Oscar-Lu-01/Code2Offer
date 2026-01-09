@@ -7,6 +7,7 @@ import edu.hhu.Code2Offer.mapper.QuestionMapper;
 import edu.hhu.Code2Offer.model.dto.question.QuestionEsDTO;
 import edu.hhu.Code2Offer.model.entity.Question;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,7 @@ public class IncSyncQuestionToEs {
     private QuestionMapper questionMapper;
 
     @Resource
+    @Lazy
     private QuestionEsDao questionEsDao;
 
     /**

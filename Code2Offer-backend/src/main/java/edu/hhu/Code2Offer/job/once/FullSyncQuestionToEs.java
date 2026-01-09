@@ -8,6 +8,7 @@ import edu.hhu.Code2Offer.model.entity.Question;
 import edu.hhu.Code2Offer.service.QuestionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -26,6 +27,7 @@ public class FullSyncQuestionToEs implements CommandLineRunner {
     private QuestionService questionService;
 
     @Resource
+    @Lazy
     private QuestionEsDao questionEsDao;
 
     @Override

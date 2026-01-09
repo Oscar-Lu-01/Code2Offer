@@ -1,5 +1,6 @@
 "use client";
 import {
+  listQuestionVoByPageUsingPost,
   // listQuestionVoByPageUsingPost,
   searchQuestionVoByPageUsingPost,
 } from "@/api/questionController";
@@ -90,6 +91,7 @@ const QuestionTable: React.FC<Props> = (props) => {
           //   sortOrder,
           //   ...filter,
           // } as API.QuestionQueryRequest);
+
           const res = await searchQuestionVoByPageUsingPost({
             ...cleanParams,
             sortField: "_score",
@@ -97,10 +99,52 @@ const QuestionTable: React.FC<Props> = (props) => {
             ...filter,
           } as API.QuestionQueryRequest);
 
+
+            // let res: any;
+            //
+            // try {
+            //   // 1. 尝试调用 ES 接口
+            //   console.log("[调试] 尝试调用 ES 接口...");
+            //   res = await searchQuestionVoByPageUsingPost({
+            //     ...cleanParams,
+            //     // ES 通常按相关度分数排序，如果没有指定排序字段，默认用 _score
+            //     sortField: sortField === "createTime" ? "_score" : sortField,
+            //     sortOrder,
+            //     ...filter,
+            //   } as API.QuestionQueryRequest);
+            //
+            //   // 校验：虽然请求成功，但如果业务状态码不对，也视为失败抛出异常
+            //   // (假设你的后端成功也是 code === 0)
+            //   if (res.code !== 0) {
+            //     throw new Error("ES 业务层报错: " + res.message);
+            //   }
+            // } catch (error) {
+            //   // 2. 捕获异常，降级调用 MySQL 接口
+            //   console.error("[降级] ES 查询失败，正在转为查询 MySQL...", error);
+            //
+            //   try {
+            //     res = await listQuestionVoByPageUsingPost({
+            //       ...cleanParams,
+            //       // MySQL 不支持 _score 排序，强制回退到 createTime 或用户指定字段
+            //       sortField: sortField === "_score" ? "createTime" : sortField,
+            //       sortOrder,
+            //       ...filter,
+            //     } as API.QuestionQueryRequest);
+            //   } catch (dbError) {
+            //     // 如果数据库也挂了，那就彻底没办法了
+            //     console.error("[错误] 数据库查询也失败了", dbError);
+            //     return { success: false, total: 0, data: [] };
+            //   }
+            // }
+
+
           // 🔥 日志位置 2：看清楚后端到底返回了什么结构
           console.log("[调试] 后端原始返回 res:", res);
           const finalData = (res as any).records || [];
           const finalTotal = (res as any).total || 0;
+
+
+
 
           //console.log("✅ [调试] 最终给表格的数据:", finalData);
 

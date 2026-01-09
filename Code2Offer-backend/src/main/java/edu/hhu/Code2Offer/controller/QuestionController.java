@@ -14,10 +14,7 @@ import edu.hhu.Code2Offer.common.ResultUtils;
 import edu.hhu.Code2Offer.constant.UserConstant;
 import edu.hhu.Code2Offer.exception.BusinessException;
 import edu.hhu.Code2Offer.exception.ThrowUtils;
-import edu.hhu.Code2Offer.model.dto.question.QuestionAddRequest;
-import edu.hhu.Code2Offer.model.dto.question.QuestionEditRequest;
-import edu.hhu.Code2Offer.model.dto.question.QuestionQueryRequest;
-import edu.hhu.Code2Offer.model.dto.question.QuestionUpdateRequest;
+import edu.hhu.Code2Offer.model.dto.question.*;
 import edu.hhu.Code2Offer.model.entity.Question;
 import edu.hhu.Code2Offer.model.entity.QuestionBankQuestion;
 import edu.hhu.Code2Offer.model.entity.User;
@@ -49,11 +46,6 @@ public class QuestionController {
 
     @Resource
     private UserService userService;
-
-    @Resource
-    private QuestionBankService questionBankService;
-    @Autowired
-    private QuestionBankQuestionService questionBankQuestionService;
 
     // region 增删改查
 
@@ -282,27 +274,15 @@ public class QuestionController {
         // 限制爬虫
         ThrowUtils.throwIf(size > 200, ErrorCode.PARAMS_ERROR);
         Page<Question> questionPage = questionService.searchFromEs(questionQueryRequest);
-
-        // ================== 【调试代码开始】 ==================
-        System.out.println("------------ 1. ES 查询结果 RAW DATA ------------");
-        // 打印 Total
-        System.out.println("ES 命中总数: " + questionPage.getTotal());
-
-        // 打印列表内容 (建议用 Gson 或 Jackson 转 JSON，方便看)
-        // 假设你有 Gson:
-        // System.out.println(new com.google.gson.GsonBuilder().setPrettyPrinting().create().toJson(questionPage.getRecords()));
-
-        // 或者直接简单打印 List (前提是 Question 类重写了 toString)
-        for (Question q : questionPage.getRecords()) {
-            System.out.println("ES查到的题目ID: " + q.getId() + ", 标题: " + q.getTitle());
-        }
-        System.out.println("------------------------------------------------");
-        // ================== 【调试代码结束】 =================
-
-
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
     }
 
-
+    @PostMapping("/delete/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> batchDeleteQuestions(@RequestBody QuestionBatchDeleteRequest questionBatchDeleteRequest) {
+        ThrowUtils.throwIf(questionBatchDeleteRequest == null, ErrorCode.PARAMS_ERROR);
+        questionService.batchDeleteQuestions(questionBatchDeleteRequest.getQuestionIdList());
+        return ResultUtils.success(true);
+    }
     // endregion
 }

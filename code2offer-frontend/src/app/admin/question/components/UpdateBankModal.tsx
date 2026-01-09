@@ -32,7 +32,7 @@ const UpdateBankModal: React.FC<Props> = (props) => {
         questionId,
         pageSize: 20,
       });
-      const list = (res.data?.records ?? []).map((item) => item.questionBankId);
+      const list = ((res as any).records ?? []).map((item) => item.questionBankId);
       console.log(list);
       form.setFieldValue("questionBankIdList" as any, list);
     } catch (e) {
@@ -57,7 +57,7 @@ const UpdateBankModal: React.FC<Props> = (props) => {
         sortField: "createTime",
         sortOrder: "descend",
       });
-      setQuestionBankList(res.data?.records ?? []);
+      setQuestionBankList((res as any).records ?? []);
     } catch (e) {
       message.error("获取题库列表失败，" + (e as Error).message);
     }
